@@ -69,6 +69,8 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    projects: Project;
+    'desktop-items': DesktopItem;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +80,8 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    'desktop-items': DesktopItemsSelect<false> | DesktopItemsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -86,10 +90,14 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
+  globals: {
+    site: Site;
+  };
+  globalsSelect: {
+    site: SiteSelect<false> | SiteSelect<true>;
+  };
+  locale: 'pt' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -160,6 +168,150 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * Individual works shown inside a folder window.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  title: string;
+  /**
+   * Used in the URL. Leave blank to generate it automatically.
+   */
+  slug?: string | null;
+  /**
+   * Shown under the title on the project card.
+   */
+  year?: string | null;
+  /**
+   * Thumbnail used in the folder window and as the video poster.
+   */
+  cover: number | Media;
+  /**
+   * Wistia, YouTube or Vimeo link. Leave blank to show the cover image instead.
+   */
+  videoUrl?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  gallery?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The icons sitting on the desktop. Each one opens a window when clicked.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "desktop-items".
+ */
+export interface DesktopItem {
+  id: number;
+  /**
+   * Caption under the icon, and the window title.
+   */
+  label: string;
+  /**
+   * Used in the URL. Leave blank to generate it automatically.
+   */
+  slug?: string | null;
+  type: 'folder' | 'text' | 'image' | 'link';
+  icon: 'folder' | 'file' | 'self' | 'custom';
+  customIcon?: (number | null) | Media;
+  /**
+   * Tint for the built-in folder and file icons. Any CSS colour.
+   */
+  iconColor?: string | null;
+  placement: 'stack' | 'free';
+  /**
+   * Horizontal position, % from the left.
+   */
+  x?: number | null;
+  /**
+   * Vertical position, % from the top.
+   */
+  y?: number | null;
+  /**
+   * Projects shown inside this folder, in this order.
+   */
+  projects?: (number | Project)[] | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Show the social links row at the bottom of this window.
+   */
+  showSocials?: boolean | null;
+  image?: (number | null) | Media;
+  url?: string | null;
+  /**
+   * Lower numbers appear first in the stack.
+   */
+  order?: number | null;
+  visible?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -192,6 +344,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'desktop-items';
+        value: number | DesktopItem;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -274,6 +434,85 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  year?: T;
+  cover?: T;
+  videoUrl?: T;
+  description?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "desktop-items_select".
+ */
+export interface DesktopItemsSelect<T extends boolean = true> {
+  label?: T;
+  slug?: T;
+  type?: T;
+  icon?: T;
+  customIcon?: T;
+  iconColor?: T;
+  placement?: T;
+  x?: T;
+  y?: T;
+  projects?: T;
+  body?: T;
+  showSocials?: T;
+  image?: T;
+  url?: T;
+  order?: T;
+  visible?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +553,213 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Identity, menu bar, dock, calendar, contact and lock screen.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site".
+ */
+export interface Site {
+  id: number;
+  /**
+   * Shown in the menu bar and on the lock screen.
+   */
+  ownerName: string;
+  /**
+   * Optional short line under the name on the lock screen.
+   */
+  tagline?: string | null;
+  avatar?: (number | null) | Media;
+  /**
+   * Looping background for the desktop and lock screen, e.g. /videos/background.mp4 or a full URL. Leave blank to use only the poster image.
+   */
+  backgroundVideoUrl?: string | null;
+  /**
+   * Still image shown while the video loads, or instead of it.
+   */
+  backgroundPoster?: (number | null) | Media;
+  menuBar?: {
+    showNav?: boolean | null;
+    showClock?: boolean | null;
+    showLanguageSwitcher?: boolean | null;
+  };
+  /**
+   * Each link either opens one of your desktop items, closes everything, or goes to a URL.
+   */
+  nav?:
+    | {
+        label: string;
+        action: 'openItem' | 'home' | 'url';
+        item?: (number | null) | DesktopItem;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The bar at the bottom of the desktop, in this order.
+   */
+  dock?:
+    | {
+        /**
+         * Tooltip shown on hover.
+         */
+        label: string;
+        icon:
+          'photos' | 'instagram' | 'youtube' | 'tiktok' | 'x' | 'linkedin' | 'whatsapp' | 'mail' | 'trash' | 'custom';
+        customIcon?: (number | null) | Media;
+        action: 'link' | 'openItem' | 'contact' | 'none';
+        url?: string | null;
+        item?: (number | null) | DesktopItem;
+        /**
+         * Draw a separator to the left of this item.
+         */
+        dividerBefore?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  lockScreen?: {
+    enabled?: boolean | null;
+    startLabel?: string | null;
+    /**
+     * Skip the lock screen if the visitor has already dismissed it.
+     */
+    showOncePerSession?: boolean | null;
+  };
+  calendar?: {
+    enabled?: boolean | null;
+    /**
+     * Colour of today’s date. Any CSS colour.
+     */
+    highlightColor?: string | null;
+  };
+  contact?: {
+    /**
+     * Show the floating contact button.
+     */
+    enabled?: boolean | null;
+    title?: string | null;
+    rows?:
+      | {
+          icon: 'whatsapp' | 'mail' | 'instagram' | 'phone' | 'custom';
+          customIcon?: (number | null) | Media;
+          label: string;
+          subtitle?: string | null;
+          /**
+           * e.g. https://wa.me/351900000000 or mailto:you@example.com
+           */
+          href: string;
+          tint?: ('neutral' | 'green' | 'blue') | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Shown at the bottom of text windows.
+   */
+  socials?:
+    | {
+        platform: 'instagram' | 'youtube' | 'tiktok' | 'x' | 'linkedin' | 'whatsapp' | 'mail';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    /**
+     * Browser tab title. Falls back to the owner name.
+     */
+    siteTitle?: string | null;
+    siteDescription?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site_select".
+ */
+export interface SiteSelect<T extends boolean = true> {
+  ownerName?: T;
+  tagline?: T;
+  avatar?: T;
+  backgroundVideoUrl?: T;
+  backgroundPoster?: T;
+  menuBar?:
+    | T
+    | {
+        showNav?: T;
+        showClock?: T;
+        showLanguageSwitcher?: T;
+      };
+  nav?:
+    | T
+    | {
+        label?: T;
+        action?: T;
+        item?: T;
+        url?: T;
+        id?: T;
+      };
+  dock?:
+    | T
+    | {
+        label?: T;
+        icon?: T;
+        customIcon?: T;
+        action?: T;
+        url?: T;
+        item?: T;
+        dividerBefore?: T;
+        id?: T;
+      };
+  lockScreen?:
+    | T
+    | {
+        enabled?: T;
+        startLabel?: T;
+        showOncePerSession?: T;
+      };
+  calendar?:
+    | T
+    | {
+        enabled?: T;
+        highlightColor?: T;
+      };
+  contact?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        rows?:
+          | T
+          | {
+              icon?: T;
+              customIcon?: T;
+              label?: T;
+              subtitle?: T;
+              href?: T;
+              tint?: T;
+              id?: T;
+            };
+      };
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        siteTitle?: T;
+        siteDescription?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "seed": "payload run scripts/seed.ts",
+    "seed:demo": "payload run scripts/seed-demo.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
