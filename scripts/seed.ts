@@ -10,7 +10,15 @@
 import { getPayload } from 'payload'
 
 import config from '../payload.config'
-import { placeholderImage, pick, richText, upsertBySlug, upsertSite } from './lib/seed-helpers'
+import {
+  placeholderImage,
+  pick,
+  removeSeedSet,
+  richText,
+  upsertBySlug,
+  upsertSite,
+} from './lib/seed-helpers'
+import { DEMO_SET } from './lib/seed-sets'
 
 const t = {
   work: { pt: 'Trabalhos', en: 'Work' },
@@ -81,6 +89,9 @@ async function seed() {
   const payload = await getPayload({ config })
 
   payload.logger.info('Seeding placeholder content…')
+
+  // Replace the demo desktop rather than stacking on top of it.
+  await removeSeedSet(payload, DEMO_SET)
 
   // --- Media ---------------------------------------------------------------
   const background = await placeholderImage(payload, {

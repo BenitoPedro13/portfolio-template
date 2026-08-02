@@ -2,6 +2,7 @@ import sharp from 'sharp'
 import type { CollectionSlug, Payload } from 'payload'
 
 import type { Config } from '../../payload-types'
+import type { SeedSet } from './seed-sets'
 import { defaultLocale, locales, toPayloadLocale } from '../../lib/locales'
 
 type PayloadLocale = Config['locale']
@@ -252,4 +253,37 @@ export async function upsertSite(payload: Payload, data: (locale: string) => Rec
       data: data(locale) as any,
     })
   }
+}
+
+// ---------------------------------------------------------------------------
+// Pruning
+// ---------------------------------------------------------------------------
+
+/**
+ * Removes the documents belonging to another seed, so switching between
+ * `pnpm seed` and `pnpm seed:demo` replaces the desktop instead of stacking a
+ * second set of icons on top of the first.
+ *
+ * Only ever touches slugs and media filenames that seed owns — anything you
+ * created in /admin is left alone.
+ */
+export async function removeSeedSet(payload: Payload, set: SeedSet) {
+  for (const slug of set.desktopItems) {
+    await payload.delete({
+      collection: 'desktop-items',
+      where: { slug: { equals: slug } },
+    })
+  }
+
+  for (const slug of set.projects) {
+    await payload.delete({
+      collection: 'projects',
+      where: { slug: { equals: slug } },
+    })
+  }
+
+  await payload.delete({
+    collection: 'media',
+    where: { filename: { like: set.mediaPrefix } },
+  })
 }

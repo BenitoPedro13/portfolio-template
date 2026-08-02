@@ -15,7 +15,15 @@
 import { getPayload } from 'payload'
 
 import config from '../payload.config'
-import { placeholderImage, pick, richText, upsertBySlug, upsertSite } from './lib/seed-helpers'
+import {
+  placeholderImage,
+  pick,
+  removeSeedSet,
+  richText,
+  upsertBySlug,
+  upsertSite,
+} from './lib/seed-helpers'
+import { PLACEHOLDER_SET } from './lib/seed-sets'
 
 const SAMPLE_MP4 =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
@@ -154,6 +162,9 @@ async function seed() {
   const payload = await getPayload({ config })
 
   payload.logger.info('Seeding demo content…')
+
+  // Replace the placeholder desktop rather than stacking on top of it.
+  await removeSeedSet(payload, PLACEHOLDER_SET)
 
   const background = await placeholderImage(payload, {
     filename: 'demo-background.png',
