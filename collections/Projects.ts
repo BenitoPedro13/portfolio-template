@@ -50,6 +50,40 @@ export const Projects: CollectionConfig = {
       },
     },
     {
+      name: 'meta',
+      type: 'array',
+      label: 'Credits',
+      labels: {
+        singular: 'Credit',
+        plural: 'Credits',
+      },
+      admin: {
+        description:
+          'Shown as a single line under the title, e.g. Role · Direction, Client · Nike, Format · 4K.',
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              required: true,
+              localized: true,
+              admin: { width: '40%' },
+            },
+            {
+              name: 'value',
+              type: 'text',
+              required: true,
+              localized: true,
+              admin: { width: '60%' },
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'description',
       type: 'richText',
       localized: true,

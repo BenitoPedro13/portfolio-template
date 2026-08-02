@@ -71,9 +71,54 @@ export function richText(blocks: RichTextBlock[]) {
 // ---------------------------------------------------------------------------
 
 /**
- * Generates a flat-colour PNG at seed time rather than committing binary
- * placeholder assets to a template repo.
+ * Renders a duotone gradient with film grain, so seeded frames read as imagery
+ * rather than colour swatches. Generated at seed time on purpose: a template
+ * repo should not carry binary placeholder assets, or anyone else's photos.
  */
+async function generateFrame(width: number, height: number, from: string, to: string) {
+  const angle = 35
+
+  const gradient = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+       <defs>
+         <linearGradient id="g" gradientTransform="rotate(${angle})">
+           <stop offset="0%" stop-color="${from}" />
+           <stop offset="55%" stop-color="${to}" />
+           <stop offset="100%" stop-color="${from}" />
+         </linearGradient>
+         <radialGradient id="v" cx="50%" cy="45%" r="75%">
+           <stop offset="55%" stop-color="#000" stop-opacity="0" />
+           <stop offset="100%" stop-color="#000" stop-opacity="0.55" />
+         </radialGradient>
+       </defs>
+       <rect width="100%" height="100%" fill="url(#g)" />
+       <rect width="100%" height="100%" fill="url(#v)" />
+     </svg>`
+  )
+
+  // Monochrome noise at quarter resolution, then scaled up — cheaper than
+  // per-pixel noise at full size and closer to real grain clumping.
+  const noiseWidth = Math.max(1, Math.round(width / 4))
+  const noiseHeight = Math.max(1, Math.round(height / 4))
+  const noise = Buffer.alloc(noiseWidth * noiseHeight)
+  for (let i = 0; i < noise.length; i += 1) {
+    noise[i] = 110 + Math.floor(Math.random() * 36)
+  }
+
+  const grain = await sharp(noise, {
+    raw: { width: noiseWidth, height: noiseHeight, channels: 1 },
+  })
+    .resize(width, height)
+    .toColourspace('b-w')
+    .png()
+    .toBuffer()
+
+  return sharp(gradient)
+    .composite([{ input: grain, blend: 'overlay' }])
+    .png()
+    .toBuffer()
+}
+
 export async function placeholderImage(
   payload: Payload,
   options: {
@@ -81,10 +126,19 @@ export async function placeholderImage(
     alt: Localized<string>
     width?: number
     height?: number
-    color?: string
+    /** Gradient endpoints; defaults to a neutral graphite. */
+    from?: string
+    to?: string
   }
 ) {
-  const { filename, alt, width = 1600, height = 900, color = '#2b2b2b' } = options
+  const {
+    filename,
+    alt,
+    width = 1600,
+    height = 900,
+    from = '#141416',
+    to = '#3a3a40',
+  } = options
 
   const existing = await payload.find({
     collection: 'media',
@@ -96,16 +150,7 @@ export async function placeholderImage(
     return existing.docs[0]
   }
 
-  const buffer = await sharp({
-    create: {
-      width,
-      height,
-      channels: 3,
-      background: color,
-    },
-  })
-    .png()
-    .toBuffer()
+  const buffer = await generateFrame(width, height, from, to)
 
   const doc = await payload.create({
     collection: 'media',

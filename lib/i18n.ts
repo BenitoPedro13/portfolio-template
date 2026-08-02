@@ -47,6 +47,14 @@ export type Dictionary = {
   notFoundCode: string
   notFoundTitle: string
   notFoundAction: string
+  /** Finder-style readout in the window title bar. */
+  kindFolder: string
+  kindText: string
+  kindImage: string
+  /** Pluralised item count; `{n}` is replaced with the number. */
+  itemCountOne: string
+  itemCountMany: string
+  nowShowing: string
 }
 
 const STRINGS: Record<string, Dictionary> = {
@@ -64,6 +72,12 @@ const STRINGS: Record<string, Dictionary> = {
     notFoundCode: '404',
     notFoundTitle: 'This page doesn’t exist',
     notFoundAction: 'Back to the desktop',
+    kindFolder: 'Folder',
+    kindText: 'Text',
+    kindImage: 'Image',
+    itemCountOne: '{n} item',
+    itemCountMany: '{n} items',
+    nowShowing: 'Now showing',
   },
   pt: {
     back: 'Voltar',
@@ -79,6 +93,12 @@ const STRINGS: Record<string, Dictionary> = {
     notFoundCode: '404',
     notFoundTitle: 'Esta página não existe',
     notFoundAction: 'Voltar ao ambiente de trabalho',
+    kindFolder: 'Pasta',
+    kindText: 'Texto',
+    kindImage: 'Imagem',
+    itemCountOne: '{n} item',
+    itemCountMany: '{n} itens',
+    nowShowing: 'A mostrar',
   },
   es: {
     back: 'Volver',
@@ -94,6 +114,12 @@ const STRINGS: Record<string, Dictionary> = {
     notFoundCode: '404',
     notFoundTitle: 'Esta página no existe',
     notFoundAction: 'Volver al escritorio',
+    kindFolder: 'Carpeta',
+    kindText: 'Texto',
+    kindImage: 'Imagen',
+    itemCountOne: '{n} elemento',
+    itemCountMany: '{n} elementos',
+    nowShowing: 'Mostrando',
   },
   fr: {
     back: 'Retour',
@@ -109,6 +135,12 @@ const STRINGS: Record<string, Dictionary> = {
     notFoundCode: '404',
     notFoundTitle: 'Cette page n’existe pas',
     notFoundAction: 'Retour au bureau',
+    kindFolder: 'Dossier',
+    kindText: 'Texte',
+    kindImage: 'Image',
+    itemCountOne: '{n} élément',
+    itemCountMany: '{n} éléments',
+    nowShowing: 'À l’affiche',
   },
 }
 
@@ -127,4 +159,11 @@ const INTL_TAGS: Record<string, string> = {
 
 export function intlLocale(locale: string): string {
   return INTL_TAGS[locale] ?? locale
+}
+
+/** Fills `{n}` in a count string and picks the right plural form. */
+export function formatCount(dictionary: Dictionary, n: number): string {
+  const template = n === 1 ? dictionary.itemCountOne : dictionary.itemCountMany
+
+  return template.replace('{n}', String(n))
 }

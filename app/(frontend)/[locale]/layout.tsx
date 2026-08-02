@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Geist_Mono, Outfit, Raleway } from 'next/font/google'
+import { Bricolage_Grotesque, Geist, Geist_Mono } from 'next/font/google'
 
 import '../globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -10,13 +10,29 @@ import { isLocale, locales } from '@/lib/i18n'
 import { getSite } from '@/lib/payload'
 import { mediaUrl } from '@/lib/media'
 
-const ralewayHeading = Raleway({ subsets: ['latin'], variable: '--font-heading' })
+/**
+ * Three type roles, each with a job:
+ *  - Geist carries the OS chrome, because a desktop pastiche should feel systemy.
+ *  - Bricolage Grotesque carries project titles and headings; its variable width
+ *    gives the work a voice the neutral UI face deliberately withholds.
+ *  - Geist Mono carries every number — years, frame indices, metadata.
+ */
+const fontDisplay = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-heading',
+  display: 'swap',
+})
 
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' })
+const fontSans = Geist({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 const fontMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
+  display: 'swap',
 })
 
 export function generateStaticParams() {
@@ -69,13 +85,13 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className={cn(
         'antialiased',
-        fontMono.variable,
         'font-sans',
-        outfit.variable,
-        ralewayHeading.variable
+        fontSans.variable,
+        fontDisplay.variable,
+        fontMono.variable
       )}
     >
-      <body className="bg-black">
+      <body className="bg-[--color-void]">
         <ThemeProvider>
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>

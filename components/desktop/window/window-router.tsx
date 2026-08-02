@@ -1,7 +1,7 @@
 'use client'
 
 import type { DesktopItem, Project, Site } from '@/payload-types'
-import type { Dictionary } from '@/lib/i18n'
+import { formatCount, type Dictionary } from '@/lib/i18n'
 import { useWindows } from '../use-windows'
 import { FolderWindow } from './folder-window'
 import { ImageWindow } from './image-window'
@@ -14,6 +14,20 @@ function populatedProjects(item: DesktopItem | null): Project[] {
   if (!item?.projects) return []
 
   return item.projects.filter((entry): entry is Project => typeof entry === 'object')
+}
+
+/** The Finder-style readout under the window title. */
+function kindLabel(item: DesktopItem, dictionary: Dictionary, count: number): string {
+  switch (item.type) {
+    case 'folder':
+      return `${dictionary.kindFolder} · ${formatCount(dictionary, count)}`
+    case 'text':
+      return dictionary.kindText
+    case 'image':
+      return dictionary.kindImage
+    default:
+      return ''
+  }
 }
 
 /**
@@ -41,11 +55,14 @@ export function WindowRouter({
   // A project view replaces the folder in the same frame, with the back arrow
   // returning to the folder listing.
   if (item && project) {
+    const position = projects.findIndex((candidate) => candidate.id === project.id)
+
     return (
       <WindowFrame
         open
         size="wide"
         title={project.title}
+        meta={position >= 0 ? `${item.label} · ${position + 1}/${projects.length}` : item.label}
         dictionary={dictionary}
         onBack={closeProject}
         onClose={closeAll}
@@ -62,11 +79,16 @@ export function WindowRouter({
       open
       size={item.type === 'folder' ? 'wide' : 'default'}
       title={item.label}
+      meta={kindLabel(item, dictionary, projects.length)}
       dictionary={dictionary}
       onClose={closeAll}
     >
       {item.type === 'folder' ? (
-        <FolderWindow projects={projects} onOpenProject={openProjectBySlug} />
+        <FolderWindow
+          projects={projects}
+          dictionary={dictionary}
+          onOpenProject={openProjectBySlug}
+        />
       ) : item.type === 'text' ? (
         <TextWindow item={item} socials={site.socials ?? []} />
       ) : (

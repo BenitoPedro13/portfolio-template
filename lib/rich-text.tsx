@@ -72,9 +72,11 @@ function renderNode(node: LexicalNode, key: string): ReactNode {
 
     case 'heading': {
       const Tag = (node.tag ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+      // Headings carry the display face; body copy stays in the UI face so the
+      // contrast between the two does the work.
       const sizes: Record<string, string> = {
-        h1: 'text-3xl sm:text-4xl',
-        h2: 'text-2xl sm:text-3xl',
+        h1: 'text-3xl leading-[1.05] sm:text-[2.75rem]',
+        h2: 'text-2xl leading-[1.1] sm:text-[2rem]',
         h3: 'text-xl sm:text-2xl',
         h4: 'text-lg',
         h5: 'text-base',
@@ -84,7 +86,7 @@ function renderNode(node: LexicalNode, key: string): ReactNode {
       return (
         <Tag
           key={key}
-          className={`mt-6 mb-4 font-semibold tracking-tight first:mt-0 ${sizes[Tag] ?? sizes.h2}`}
+          className={`font-heading mt-8 mb-4 font-bold tracking-tight text-balance first:mt-0 ${sizes[Tag] ?? sizes.h2}`}
         >
           {renderChildren(node.children, key)}
         </Tag>

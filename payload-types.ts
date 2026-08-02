@@ -220,6 +220,16 @@ export interface Project {
    * Wistia, YouTube or Vimeo link. Leave blank to show the cover image instead.
    */
   videoUrl?: string | null;
+  /**
+   * Shown as a single line under the title, e.g. Role · Direction, Client · Nike, Format · 4K.
+   */
+  meta?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
   description?: {
     root: {
       type: string;
@@ -479,6 +489,13 @@ export interface ProjectsSelect<T extends boolean = true> {
   year?: T;
   cover?: T;
   videoUrl?: T;
+  meta?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
   description?: T;
   gallery?:
     | T

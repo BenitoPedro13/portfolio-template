@@ -49,7 +49,7 @@ const projects = [
     slug: 'sample-project-one',
     title: { pt: 'Projeto Um', en: 'Sample Project One' },
     year: '2026',
-    color: '#3f3f46',
+    from: '#101013', to: '#3b3b44',
     description: {
       pt: 'Uma breve descrição do projeto. Adicione um vídeo, uma galeria e o texto que quiser.',
       en: 'A short description of the project. Add a video, a gallery and whatever copy you like.',
@@ -59,7 +59,7 @@ const projects = [
     slug: 'sample-project-two',
     title: { pt: 'Projeto Dois', en: 'Sample Project Two' },
     year: '2026',
-    color: '#4b4b52',
+    from: '#12100f', to: '#46403a',
     description: {
       pt: 'Cada projeto pode ter um vídeo do Wistia, YouTube ou Vimeo, além de uma galeria de imagens.',
       en: 'Each project can carry a Wistia, YouTube or Vimeo video, plus an image gallery.',
@@ -69,7 +69,7 @@ const projects = [
     slug: 'sample-project-three',
     title: { pt: 'Projeto Três', en: 'Sample Project Three' },
     year: '2025',
-    color: '#57575f',
+    from: '#0e1113', to: '#39454b',
     description: {
       pt: 'Reordene os projetos com o campo "order" na barra lateral.',
       en: 'Reorder projects with the "order" field in the sidebar.',
@@ -88,7 +88,8 @@ async function seed() {
     alt: { pt: 'Fundo', en: 'Background' },
     width: 1920,
     height: 1080,
-    color: '#1c1c1e',
+    from: '#0a0a0b',
+    to: '#2a2a2f',
   })
 
   const avatar = await placeholderImage(payload, {
@@ -96,7 +97,8 @@ async function seed() {
     alt: { pt: 'Retrato', en: 'Portrait' },
     width: 600,
     height: 600,
-    color: '#6b6b73',
+    from: '#26262b',
+    to: '#5c5c66',
   })
 
   const covers = await Promise.all(
@@ -104,7 +106,8 @@ async function seed() {
       placeholderImage(payload, {
         filename: `placeholder-${project.slug}.png`,
         alt: project.title,
-        color: project.color,
+        from: project.from,
+        to: project.to,
       })
     )
   )

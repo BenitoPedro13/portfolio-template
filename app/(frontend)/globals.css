@@ -114,6 +114,20 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    /* --- Desktop surface -------------------------------------------------
+       The shell is a dark room with a photograph in it; the windows are the
+       only lit surfaces. These sit outside the light/dark token set on
+       purpose — the desktop does not follow the theme, the windows do. */
+    --color-void: oklch(0.13 0.003 260);
+    --color-glass: oklch(0.27 0.004 260 / 0.62);
+    --color-glass-edge: oklch(1 0 0 / 0.12);
+    --color-signal: oklch(0.63 0.204 27);
+}
+
+@theme {
+    /* macOS windows ease out fast and settle; a linear curve reads as cheap. */
+    --ease-window: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
@@ -125,5 +139,27 @@
     }
   html {
     @apply font-sans;
+    }
+
+  /* Numbers are data here — years, frame indices, timecode — so they get the
+     mono face and lining figures wherever they appear. */
+  .font-data {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    }
+
+  /* The window open/close animation is the only orchestrated motion on the
+     page; honour the OS setting rather than shipping it unconditionally. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+      }
     }
 }
