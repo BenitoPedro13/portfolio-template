@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -42,5 +43,19 @@ export default buildConfig({
   // sharp 0.35's overloaded constructor does not match Payload's narrower
   // `SharpDependency` signature; the runtime behaviour is identical.
   sharp: sharp as unknown as Parameters<typeof buildConfig>[0]['sharp'],
-  plugins: [],
+  plugins: [
+    /**
+     * Serverless filesystems are ephemeral, so uploads must go to blob storage
+     * in production. Enabled only when the token exists, which keeps local
+     * development writing to ./media with no extra setup.
+     */
+    ...(process.env.BLOB_READ_WRITE_TOKEN
+      ? [
+          vercelBlobStorage({
+            collections: { media: true },
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+          }),
+        ]
+      : []),
+  ],
 })

@@ -48,7 +48,15 @@ export async function generateMetadata({
 
   if (!isLocale(locale)) return {}
 
-  const site = await getSite(locale)
+  // Metadata must never take the whole page down — if the database is briefly
+  // unreachable the desktop should still render with a bare title.
+  let site: Awaited<ReturnType<typeof getSite>>
+  try {
+    site = await getSite(locale)
+  } catch {
+    return {}
+  }
+
   const title = site.seo?.siteTitle || site.ownerName
   const description = site.seo?.siteDescription || undefined
   const ogImage = mediaUrl(site.seo?.ogImage)
