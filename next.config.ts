@@ -15,7 +15,9 @@ const nextConfig: NextConfig = {
    * function output.
    */
   outputFileTracingIncludes: {
-    '/**': ['./node_modules/.pnpm/@img/**/*'],
+    // pnpm's store names directories `@img+pkg@version`, not `@img/pkg`, so the
+    // glob has to match that shape.
+    '/**': ['./node_modules/.pnpm/@img+*/**/*', './node_modules/@img/**/*'],
   },
 }
 
