@@ -10,11 +10,16 @@ export function useNow(intervalMs = 1000): Date | null {
   const [now, setNow] = useState<Date | null>(null)
 
   useEffect(() => {
-    setNow(new Date())
-
+    // Deferred to the next frame rather than set synchronously: the first
+    // value only needs to land after the initial paint, and doing it inline
+    // forces a cascading re-render.
+    const frame = window.requestAnimationFrame(() => setNow(new Date()))
     const id = window.setInterval(() => setNow(new Date()), intervalMs)
 
-    return () => window.clearInterval(id)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearInterval(id)
+    }
   }, [intervalMs])
 
   return now

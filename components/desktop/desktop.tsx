@@ -127,12 +127,7 @@ export function Desktop({
       <WindowRouter items={items} site={site} dictionary={dictionary} />
 
       {showContact ? (
-        <ContactDialog
-          contact={contact!}
-          dictionary={dictionary}
-          open={contactOpen}
-          onOpenChange={setContactOpen}
-        />
+        <ContactDialog contact={contact!} open={contactOpen} onOpenChange={setContactOpen} />
       ) : null}
 
       <LockScreen site={site} locale={locale} hasOpenWindow={openWindow !== null} />

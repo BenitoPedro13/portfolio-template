@@ -97,6 +97,24 @@ function DockTile({ item, size }: { item: DockItem; size: number }) {
 }
 
 /**
+ * Horizontal centre of each tile at rest. Tiles sit on a fixed pitch, so these
+ * can be computed rather than measured — no layout reads while the pointer
+ * moves. Lives outside the component so the running offset is never a
+ * render-scope mutation.
+ */
+function tileCenters(items: DockItem[]): number[] {
+  const pitch = TILE_SIZE + 6
+  let column = 0
+
+  return items.map((item) => {
+    if (item.dividerBefore) column += 0.25
+    const centerX = 12 + column * pitch + TILE_SIZE / 2
+    column += 1
+    return centerX
+  })
+}
+
+/**
  * Bottom dock. Every slot — icon, order, divider and behaviour — comes from
  * `site.dock`, so the whole bar is editable in the admin.
  */
@@ -114,10 +132,7 @@ export function Dock({
 
   if (items.length === 0) return null
 
-  // Tile centres are laid out on a fixed pitch, so they can be computed rather
-  // than measured — no layout reads during pointer movement.
-  const pitch = TILE_SIZE + 6
-  let column = 0
+  const centers = tileCenters(items)
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center px-2 pb-2 sm:pb-4">
@@ -125,20 +140,19 @@ export function Dock({
         ref={containerRef}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        className="pointer-events-auto flex max-w-full items-end gap-1.5 overflow-x-auto rounded-2xl px-3 py-2 backdrop-blur-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="pointer-events-auto flex max-w-full items-center gap-1.5 overflow-x-auto rounded-2xl px-3 backdrop-blur-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{
           background: 'rgba(30, 30, 30, 0.55)',
           borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+          // Sized for the largest a tile can get, so magnification grows the
+          // tiles symmetrically about the centre line without the bar itself
+          // jumping in height.
+          height: TILE_SIZE * MAX_SCALE + 16,
         }}
       >
-        {items.map((item) => {
+        {items.map((item, index) => {
           const target = resolveItem(item.item)
-
-          if (item.dividerBefore) column += 0.25
-          const centerX = 12 + column * pitch + TILE_SIZE / 2
-          column += 1
-
-          const size = Math.round(TILE_SIZE * scaleFor(centerX))
+          const size = Math.round(TILE_SIZE * scaleFor(centers[index]))
 
           const tile = (
             <span className="block transition-[width,height] duration-150 ease-out">
@@ -183,7 +197,11 @@ export function Dock({
               ) : null}
               <Tooltip>
                 <TooltipTrigger render={control} />
-                <TooltipContent side="top" sideOffset={10} className="hidden sm:block">
+                <TooltipContent
+                  side="top"
+                  sideOffset={12}
+                  className="hidden border border-white/10 bg-neutral-900/95 text-white shadow-lg sm:block [&_[data-slot=tooltip-arrow]]:bg-neutral-900"
+                >
                   {item.label}
                 </TooltipContent>
               </Tooltip>

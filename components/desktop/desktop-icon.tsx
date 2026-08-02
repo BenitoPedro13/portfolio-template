@@ -71,10 +71,13 @@ export function DesktopIcon({
             height={112}
             className="h-full w-full rounded-lg object-cover drop-shadow-lg"
           />
-        ) : item.icon === 'file' ? (
-          <FileGlyph color={color} />
-        ) : (
+        ) : // An item whose icon should be its own artwork must never fall back
+        // to a folder — that misreports what opening it will do. A file glyph
+        // is the honest stand-in while the image is missing.
+        item.type === 'folder' ? (
           <FolderGlyph color={color} />
+        ) : (
+          <FileGlyph color={color} />
         )}
       </span>
       <span className="line-clamp-2 text-center text-xs font-medium tracking-wide text-white/90 drop-shadow-md">

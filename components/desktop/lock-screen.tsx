@@ -43,10 +43,15 @@ export function LockScreen({
 
   useEffect(() => {
     // The blocking script already hid this visually; unmount it so it cannot
-    // trap focus or swallow clicks.
-    if (showsAtAll && site.lockScreen?.showOncePerSession !== false && alreadyDismissed()) {
-      setVisible(false)
-    }
+    // trap focus or swallow clicks. Deferred a frame so the state change does
+    // not cascade out of the effect body.
+    const frame = window.requestAnimationFrame(() => {
+      if (showsAtAll && site.lockScreen?.showOncePerSession !== false && alreadyDismissed()) {
+        setVisible(false)
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frame)
     // Decided once on mount: opening a window later must not re-lock the site.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

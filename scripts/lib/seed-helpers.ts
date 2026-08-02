@@ -147,38 +147,66 @@ export async function placeholderImage(
     limit: 1,
   })
 
-  if (existing.docs[0]) {
-    const doc = existing.docs[0]
+  /**
+   * A doc seeded before blob storage was configured carries a local
+   * `/api/media/file/...` URL, which serverless cannot serve — the images
+   * silently 404 in production. Re-upload whenever the stored URL disagrees
+   * with the storage backend currently in effect, so switching backends heals
+   * itself on the next seed instead of leaving broken images behind.
+   */
+  const existingDoc = existing.docs[0]
 
-    /**
-     * A doc seeded before blob storage was configured carries a local
-     * `/api/media/file/...` URL, which serverless cannot serve — the images
-     * silently 404 in production. Re-upload whenever the stored URL disagrees
-     * with the storage backend currently in effect, so switching backends
-     * heals itself on the next seed instead of leaving broken images behind.
-     */
+  if (existingDoc) {
     const usingBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN)
-    const storedInBlob = (doc.url ?? '').includes('blob.vercel-storage.com')
+    const storedInBlob = (existingDoc.url ?? '').includes('blob.vercel-storage.com')
 
     if (usingBlob === storedInBlob) {
-      return doc
+      return existingDoc
     }
-
-    await payload.delete({ collection: 'media', id: doc.id })
   }
 
   const buffer = await generateFrame(width, height, from, to)
+
+  const file = {
+    data: buffer,
+    mimetype: 'image/png',
+    name: filename,
+    size: buffer.byteLength,
+  }
+
+  // Replace the file on the existing document rather than deleting and
+  // recreating it. Projects require a cover, so dropping the media row makes
+  // Postgres try to null a NOT NULL column; updating in place keeps the id and
+  // every reference to it intact.
+  if (existingDoc) {
+    const updated = await payload.update({
+      collection: 'media',
+      id: existingDoc.id,
+      locale: asLocale(defaultLocale),
+      data: { alt: pick(alt, defaultLocale) },
+      file,
+      // Re-uploading under the same name trips the unique-filename check
+      // against the document being replaced; this is a deliberate overwrite.
+      overwriteExistingFiles: true,
+    })
+
+    for (const locale of seedLocales.slice(1)) {
+      await payload.update({
+        collection: 'media',
+        id: existingDoc.id,
+        locale: asLocale(locale),
+        data: { alt: pick(alt, locale) },
+      })
+    }
+
+    return updated
+  }
 
   const doc = await payload.create({
     collection: 'media',
     locale: asLocale(defaultLocale),
     data: { alt: pick(alt, defaultLocale) },
-    file: {
-      data: buffer,
-      mimetype: 'image/png',
-      name: filename,
-      size: buffer.byteLength,
-    },
+    file,
   })
 
   for (const locale of seedLocales.slice(1)) {

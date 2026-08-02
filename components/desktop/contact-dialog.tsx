@@ -10,7 +10,6 @@ import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/comp
 import { Separator } from '@/components/ui/separator'
 import { useIsMobile } from '@/hooks/use-mobile'
 import type { Site } from '@/payload-types'
-import type { Dictionary } from '@/lib/i18n'
 import { mediaUrl } from '@/lib/media'
 import { cn } from '@/lib/utils'
 import { PlatformIcon } from './brand-icons'
@@ -71,12 +70,10 @@ function Row({ row }: { row: ContactRow }) {
 
 export function ContactDialog({
   contact,
-  dictionary,
   open,
   onOpenChange,
 }: {
   contact: NonNullable<Site['contact']>
-  dictionary: Dictionary
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
