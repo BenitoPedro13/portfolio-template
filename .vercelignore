@@ -1,0 +1,11 @@
+# `vercel deploy` uploads the working directory, so local env files would be
+# bundled into the deployment. Environment variables must come from the Vercel
+# project settings instead — never from a file shipped with the code.
+.env
+.env.*
+!.env.example
+
+# Local-only artefacts
+/media
+/.next
+/node_modules
