@@ -6,3 +6,18 @@ allowBuilds:
   msw: false
   esbuild: true
   workerd: true
+
+# sharp ships its native libvips as platform-specific optional dependencies.
+# A lockfile resolved only on macOS leaves the Linux build on Vercel without
+# libvips, and every request that touches Payload dies with ERR_DLOPEN_FAILED.
+# Resolving for Linux x64 as well keeps one lockfile valid on both platforms.
+supportedArchitectures:
+  os:
+    - current
+    - linux
+  cpu:
+    - current
+    - x64
+  libc:
+    - current
+    - glibc
