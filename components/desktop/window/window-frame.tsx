@@ -90,10 +90,19 @@ export function WindowFrame({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          'flex max-h-[86vh] w-[calc(100%-3rem)] flex-col gap-0 overflow-hidden rounded-2xl p-0',
+          'flex flex-col gap-0 overflow-hidden rounded-2xl p-0',
           'shadow-[0_32px_80px_-12px_rgb(0_0_0_/_0.5)] ring-1 ring-black/10',
           'duration-300 ease-window',
-          size === 'wide' ? 'sm:max-w-[1180px]' : 'sm:max-w-[860px]'
+          // A desktop window is a proportion of the screen, not a fixed slab:
+          // scale with the viewport, then cap so it stops growing on very wide
+          // monitors.
+          size === 'wide'
+            ? 'w-[calc(100%-3rem)] sm:w-[88vw] sm:max-w-[1400px]'
+            : 'w-[calc(100%-3rem)] sm:w-[66vw] sm:min-w-[38rem] sm:max-w-[920px]',
+          // Never cover the menu bar or the dock. The free space between them
+          // is biased upward, so the window is nudged up to sit optically
+          // centred inside it rather than centred on the viewport.
+          'max-h-[calc(100dvh-10rem)] sm:top-[calc(50%-1.75rem)]'
         )}
       >
         {header}

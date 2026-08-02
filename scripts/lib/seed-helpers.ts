@@ -225,6 +225,48 @@ export async function placeholderImage(
 // Upserts
 // ---------------------------------------------------------------------------
 
+type Json = Record<string, unknown>
+
+const isObject = (value: unknown): value is Json =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/**
+ * Copies array row `id`s from an already-saved document onto the data being
+ * written for another locale.
+ *
+ * Payload writes one locale per request. An array row sent without an `id` is
+ * treated as a brand new row, so writing the second locale replaced the rows
+ * the first had created and silently discarded its translations — the default
+ * locale ended up with rows that had no localized values at all. Matching rows
+ * by position and carrying their ids over makes each pass an update.
+ */
+function withRowIds<T>(next: T, saved: unknown): T {
+  if (Array.isArray(next)) {
+    const savedRows = Array.isArray(saved) ? saved : []
+
+    return next.map((row, index) => {
+      const savedRow = savedRows[index]
+      const merged = withRowIds(row, savedRow)
+
+      if (isObject(merged) && isObject(savedRow) && typeof savedRow.id === 'string') {
+        return { ...merged, id: savedRow.id }
+      }
+
+      return merged
+    }) as T
+  }
+
+  if (isObject(next)) {
+    const savedObject = isObject(saved) ? saved : {}
+
+    return Object.fromEntries(
+      Object.entries(next).map(([key, value]) => [key, withRowIds(value, savedObject[key])])
+    ) as T
+  }
+
+  return next
+}
+
 /**
  * Creates or updates a document identified by its slug, writing one locale at a
  * time so localized fields land in the right place.
@@ -245,9 +287,12 @@ export async function upsertBySlug<T extends CollectionSlug>(
   })
 
   let id = existing.docs[0]?.id
+  let saved: unknown = existing.docs[0]
 
   for (const locale of seedLocales) {
-    const localeData = { ...data(locale), slug }
+    // Rows must carry the ids assigned by the previous locale's write, or this
+    // pass replaces them and drops that locale's translations.
+    const localeData = withRowIds({ ...data(locale), slug }, saved)
 
     if (id === undefined) {
       const created = await payload.create({
@@ -257,8 +302,9 @@ export async function upsertBySlug<T extends CollectionSlug>(
         data: localeData as any,
       })
       id = created.id
+      saved = created
     } else {
-      await payload.update({
+      saved = await payload.update({
         collection,
         id,
         locale: asLocale(locale),
@@ -273,12 +319,14 @@ export async function upsertBySlug<T extends CollectionSlug>(
 
 /** Writes the `site` global once per locale. */
 export async function upsertSite(payload: Payload, data: (locale: string) => Record<string, unknown>) {
+  let saved: unknown = await payload.findGlobal({ slug: 'site', locale: asLocale(defaultLocale) })
+
   for (const locale of seedLocales) {
-    await payload.updateGlobal({
+    saved = await payload.updateGlobal({
       slug: 'site',
       locale: asLocale(locale),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: data(locale) as any,
+      data: withRowIds(data(locale), saved) as any,
     })
   }
 }

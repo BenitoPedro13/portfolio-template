@@ -60,7 +60,10 @@ export function FolderWindow({
         onClick={() => open(hero)}
         className="group relative block w-full cursor-pointer overflow-hidden rounded-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
       >
-        <AspectRatio ratio={16 / 9} className="bg-foreground/8">
+        {/* Cinemascope rather than 16:9 — it matches how the work is shot, and
+            keeps the hero short enough that the strip below stays in view
+            without scrolling. */}
+        <AspectRatio ratio={21 / 9} className="bg-foreground/8">
           {heroCover ? (
             <Image
               key={heroCover}

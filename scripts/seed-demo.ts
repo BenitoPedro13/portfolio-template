@@ -47,7 +47,7 @@ const t = {
     pt: 'Videógrafo, fotógrafo e criador de conteúdo. Narrativas visuais com impacto.',
     en: 'Videographer, photographer and content creator. Visual storytelling with impact.',
   },
-  role: { pt: 'Direção', en: 'Direction' },
+  role: { pt: 'Função', en: 'Role' },
   format: { pt: 'Formato', en: 'Format' },
   client: { pt: 'Cliente', en: 'Client' },
 }
