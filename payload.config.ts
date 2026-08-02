@@ -38,6 +38,19 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
+      /**
+       * Serverless functions each open their own pool, so an uncapped pool
+       * multiplied by concurrent instances exhausts Postgres quickly. Requests
+       * here are short and query sequentially, so a small ceiling plus a brisk
+       * idle timeout keeps connections circulating rather than parked.
+       *
+       * Use Supabase's TRANSACTION pooler (port 6543) in production — session
+       * mode (5432) pins one server connection per client and dies with
+       * EMAXCONNSESSION under any real traffic.
+       */
+      max: 4,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
     },
   }),
   // sharp 0.35's overloaded constructor does not match Payload's narrower
