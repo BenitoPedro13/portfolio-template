@@ -2,23 +2,18 @@ import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Payload loads sharp at module scope, so it must stay a real Node module
-  // rather than being bundled.
-  serverExternalPackages: ['sharp'],
-
   /**
-   * sharp's native libvips lives in platform-specific `@img/*` packages that
-   * pnpm installs behind symlinks in `node_modules/.pnpm`. Next's file tracer
-   * does not follow those symlinks, so the serverless bundle ships without
-   * `libvips-cpp.so` and every request touching Payload fails at runtime with
-   * ERR_DLOPEN_FAILED. Including them explicitly puts the binaries in the
-   * function output.
+   * Payload loads sharp at module scope, so it must stay a real Node module
+   * rather than being bundled by Turbopack.
+   *
+   * Do NOT add `outputFileTracingIncludes` for sharp's `@img/*` packages: the
+   * platform variants total ~116 MB, and including them under a `'/**'` key
+   * copies that into every route until the deployment upload fails with a bare
+   * "unexpected error" after an otherwise green build. Keeping sharp on the
+   * same version Next depends on lets Vercel's builder supply the native
+   * binary instead.
    */
-  outputFileTracingIncludes: {
-    // pnpm's store names directories `@img+pkg@version`, not `@img/pkg`, so the
-    // glob has to match that shape.
-    '/**': ['./node_modules/.pnpm/@img+*/**/*', './node_modules/@img/**/*'],
-  },
+  serverExternalPackages: ['sharp'],
 }
 
 export default withPayload(nextConfig)
