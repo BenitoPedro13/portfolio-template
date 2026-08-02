@@ -32,12 +32,13 @@ export function Background({
           className="h-full w-full object-cover"
         />
       ) : posterUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={posterUrl}
-          alt=""
+        // A CSS background rather than <img>: the wallpaper is decorative, and
+        // a failed <img> paints the browser's broken-image glyph over the
+        // desktop, which looks like a bug rather than a missing file.
+        <div
           aria-hidden="true"
-          className="h-full w-full object-cover"
+          className="h-full w-full bg-cover bg-center"
+          style={{ backgroundImage: `url(${JSON.stringify(posterUrl)})` }}
         />
       ) : null}
 

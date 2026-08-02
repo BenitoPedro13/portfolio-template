@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { CSSProperties, SVGProps } from 'react'
 
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
@@ -109,15 +109,22 @@ const HUGE_ICONS = {
 export type IconName = keyof typeof BRAND_ICONS | keyof typeof HUGE_ICONS
 
 /** Renders a dock / social / contact icon by its CMS value. */
-export function PlatformIcon({ name, className }: { name: string; className?: string }) {
+export function PlatformIcon({
+  name,
+  className,
+  style,
+}: {
+  name: string
+  className?: string
+  /** Lets the dock size icons as tiles magnify. */
+  style?: CSSProperties
+}) {
   if (name in BRAND_ICONS) {
     const Brand = BRAND_ICONS[name as keyof typeof BRAND_ICONS]
-    return <Brand className={className} />
+    return <Brand className={className} style={style} />
   }
 
-  if (name in HUGE_ICONS) {
-    return <HugeiconsIcon icon={HUGE_ICONS[name as keyof typeof HUGE_ICONS]} className={className} />
-  }
+  const icon = name in HUGE_ICONS ? HUGE_ICONS[name as keyof typeof HUGE_ICONS] : Image01Icon
 
-  return <HugeiconsIcon icon={Image01Icon} className={className} />
+  return <HugeiconsIcon icon={icon} className={className} style={style} />
 }

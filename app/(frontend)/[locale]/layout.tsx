@@ -8,6 +8,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { isLocale, locales } from '@/lib/i18n'
 import { getSite } from '@/lib/payload'
+import { introBlockingScript } from '@/lib/intro'
 import { mediaUrl } from '@/lib/media'
 
 /**
@@ -94,12 +95,20 @@ export default async function LocaleLayout({
       className={cn(
         'antialiased',
         'font-sans',
+        // The dark surface must sit on <html>, not just <body>: the browser
+        // paints html's background in the canvas margins, and a body-only
+        // background leaves a white frame around the viewport edges.
+        'bg-void',
         fontSans.variable,
         fontDisplay.variable,
         fontMono.variable
       )}
     >
-      <body className="bg-[--color-void]">
+      <head>
+        {/* Must run before first paint; see lib/intro.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: introBlockingScript }} />
+      </head>
+      <body className="bg-void">
         <ThemeProvider>
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>

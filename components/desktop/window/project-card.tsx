@@ -35,7 +35,7 @@ export function ProjectCard({
         'transition-[opacity,box-shadow] duration-300 ease-window',
         'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
         active
-          ? 'ring-2 ring-[--color-signal]'
+          ? 'ring-2 ring-signal'
           : 'opacity-80 hover:opacity-100',
         className
       )}
@@ -65,7 +65,7 @@ export function ProjectCard({
         <span
           className={cn(
             'font-data shrink-0 text-[10px] transition-colors',
-            active ? 'text-[--color-signal]' : 'text-white/40'
+            active ? 'text-signal' : 'text-white/40'
           )}
         >
           {String(index + 1).padStart(2, '0')}

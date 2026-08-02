@@ -147,7 +147,23 @@ export async function placeholderImage(
   })
 
   if (existing.docs[0]) {
-    return existing.docs[0]
+    const doc = existing.docs[0]
+
+    /**
+     * A doc seeded before blob storage was configured carries a local
+     * `/api/media/file/...` URL, which serverless cannot serve — the images
+     * silently 404 in production. Re-upload whenever the stored URL disagrees
+     * with the storage backend currently in effect, so switching backends
+     * heals itself on the next seed instead of leaving broken images behind.
+     */
+    const usingBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+    const storedInBlob = (doc.url ?? '').includes('blob.vercel-storage.com')
+
+    if (usingBlob === storedInBlob) {
+      return doc
+    }
+
+    await payload.delete({ collection: 'media', id: doc.id })
   }
 
   const buffer = await generateFrame(width, height, from, to)

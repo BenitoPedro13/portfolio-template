@@ -141,6 +141,14 @@
     @apply font-sans;
     }
 
+  /* The lock screen renders on the server so it is present in the first
+     painted frame. For a visitor who already dismissed it this session, the
+     blocking script in <head> stamps the document before paint and this rule
+     hides it with no flash in either direction. React then unmounts it. */
+  html[data-intro-seen] [data-lock-screen] {
+    display: none;
+    }
+
   /* Numbers are data here — years, frame indices, timecode — so they get the
      mono face and lining figures wherever they appear. */
   .font-data {

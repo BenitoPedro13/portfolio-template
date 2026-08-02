@@ -64,18 +64,33 @@ function useMagnification(enabled: boolean) {
   return { containerRef, onMouseMove, onMouseLeave, scaleFor, active: cursorX !== null }
 }
 
-function DockTile({ item }: { item: DockItem }) {
+function DockTile({ item, size }: { item: DockItem; size: number }) {
   const customIcon = item.icon === 'custom' ? mediaUrl(item.customIcon, 'thumbnail') : null
+  const iconSize = Math.round(size * 0.55)
 
   return (
     <span
-      className="flex size-11 items-center justify-center rounded-xl text-white/90"
-      style={TILE_STYLE}
+      className="flex items-center justify-center rounded-xl text-white/90"
+      // Sizing the element rather than transforming it is what makes
+      // neighbours move aside; a scale transform leaves layout untouched and
+      // magnified tiles simply overlap.
+      style={{ ...TILE_STYLE, width: size, height: size, borderRadius: size * 0.26 }}
     >
       {customIcon ? (
-        <Image src={customIcon} alt="" width={44} height={44} className="size-6 object-contain" />
+        <Image
+          src={customIcon}
+          alt=""
+          width={88}
+          height={88}
+          className="object-contain"
+          style={{ width: iconSize, height: iconSize }}
+        />
       ) : (
-        <PlatformIcon name={item.icon} className="size-6" />
+        <PlatformIcon
+          name={item.icon}
+          className="shrink-0"
+          style={{ width: iconSize, height: iconSize }}
+        />
       )}
     </span>
   )
@@ -123,14 +138,11 @@ export function Dock({
           const centerX = 12 + column * pitch + TILE_SIZE / 2
           column += 1
 
-          const scale = scaleFor(centerX)
+          const size = Math.round(TILE_SIZE * scaleFor(centerX))
 
           const tile = (
-            <span
-              className="block origin-bottom transition-transform duration-150 ease-out will-change-transform"
-              style={{ transform: `scale(${scale})` }}
-            >
-              <DockTile item={item} />
+            <span className="block transition-[width,height] duration-150 ease-out">
+              <DockTile item={item} size={size} />
             </span>
           )
 

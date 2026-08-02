@@ -5,29 +5,19 @@ import Image from 'next/image'
 
 import type { Site } from '@/payload-types'
 import { intlLocale } from '@/lib/i18n'
+import { INTRO_DISMISSED_KEY } from '@/lib/intro'
 import { mediaAlt, mediaUrl } from '@/lib/media'
 import { cn } from '@/lib/utils'
 import { Background } from './background'
 import { useNow } from './use-now'
 
-const SESSION_KEY = 'portfolio:intro-dismissed'
-
-/**
- * Whether the lock screen should be shown on this load. Kept out of render so
- * the server and the first client paint agree: it always starts hidden and is
- * revealed in an effect.
- */
-function shouldShow(site: Site, hasOpenWindow: boolean): boolean {
-  if (site.lockScreen?.enabled === false) return false
-  // A deep link to a window means the visitor is not arriving at the front door.
-  if (hasOpenWindow) return false
-  if (site.lockScreen?.showOncePerSession === false) return true
-
+/** True when this session already dismissed the lock screen. */
+function alreadyDismissed(): boolean {
   try {
-    return window.sessionStorage.getItem(SESSION_KEY) !== '1'
+    return window.sessionStorage.getItem(INTRO_DISMISSED_KEY) === '1'
   } catch {
-    // Private browsing and blocked storage: fail open, showing the screen.
-    return true
+    // Private browsing or blocked storage: fail open and show the screen.
+    return false
   }
 }
 
@@ -40,13 +30,24 @@ export function LockScreen({
   locale: string
   hasOpenWindow: boolean
 }) {
-  const [visible, setVisible] = useState(false)
+  /**
+   * Starts visible so the lock screen is in the very first painted frame —
+   * deciding this in an effect made the desktop flash before it appeared.
+   * The value is deterministic on server and client; the sessionStorage part
+   * is handled pre-paint by CSS keyed off the attribute set in <head>.
+   */
+  const showsAtAll = site.lockScreen?.enabled !== false && !hasOpenWindow
+  const [visible, setVisible] = useState(showsAtAll)
   const [leaving, setLeaving] = useState(false)
   const now = useNow()
 
   useEffect(() => {
-    setVisible(shouldShow(site, hasOpenWindow))
-    // Only decided on mount: reopening a window later must not re-lock the site.
+    // The blocking script already hid this visually; unmount it so it cannot
+    // trap focus or swallow clicks.
+    if (showsAtAll && site.lockScreen?.showOncePerSession !== false && alreadyDismissed()) {
+      setVisible(false)
+    }
+    // Decided once on mount: opening a window later must not re-lock the site.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -64,7 +65,7 @@ export function LockScreen({
   function dismiss() {
     setLeaving(true)
     try {
-      window.sessionStorage.setItem(SESSION_KEY, '1')
+      window.sessionStorage.setItem(INTRO_DISMISSED_KEY, '1')
     } catch {
       // Ignore: dismissing still works, it just will not be remembered.
     }
@@ -78,6 +79,7 @@ export function LockScreen({
 
   return (
     <div
+      data-lock-screen=""
       className={cn(
         'fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none',
         'transition-opacity duration-500',

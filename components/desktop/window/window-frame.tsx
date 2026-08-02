@@ -63,7 +63,7 @@ export function WindowFrame({
         type="button"
         onClick={onClose}
         aria-label={dictionary.close}
-        className="absolute right-4 size-3.5 cursor-pointer rounded-full bg-[--color-signal] transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+        className="absolute right-4 size-3.5 cursor-pointer rounded-full bg-signal transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
       />
     </div>
   )

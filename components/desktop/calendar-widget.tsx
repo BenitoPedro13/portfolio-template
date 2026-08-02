@@ -32,11 +32,18 @@ export function CalendarWidget({
   const tag = intlLocale(locale)
 
   const weekdayNames = useMemo(() => {
-    const formatter = new Intl.DateTimeFormat(tag, { weekday: 'short' })
+    // `timeZone: 'UTC'` is essential: without it these UTC midnights are
+    // formatted in local time, and any timezone behind UTC shifts every label
+    // back a day so the header starts on Saturday.
+    const formatter = new Intl.DateTimeFormat(tag, { weekday: 'short', timeZone: 'UTC' })
+
     // 2023-01-01 was a Sunday, so this walks Sun → Sat.
-    return Array.from({ length: 7 }, (_, i) =>
-      formatter.format(new Date(Date.UTC(2023, 0, 1 + i)))
-    )
+    return Array.from({ length: 7 }, (_, i) => {
+      const name = formatter.format(new Date(Date.UTC(2023, 0, 1 + i)))
+      // Some locales return a full weekday for 'short' ("segunda-feira"), which
+      // will not fit a 7-column grid — trim to the conventional 3 letters.
+      return name.replace(/\.$/, '').slice(0, 3)
+    })
   }, [tag])
 
   const monthFormatter = useMemo(
@@ -71,7 +78,9 @@ export function CalendarWidget({
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="size-3.5" />
         </button>
-        <span className="text-xs font-semibold tracking-wide text-white/90 capitalize">
+        {/* `capitalize` would title-case every word, giving "Agosto De 2026";
+            only the first letter should change. */}
+        <span className="truncate text-xs font-semibold tracking-wide text-white/90 first-letter:uppercase">
           {monthFormatter.format(month)}
         </span>
         <button
@@ -85,10 +94,13 @@ export function CalendarWidget({
       </div>
 
       <div className="grid grid-cols-7 px-3 pt-2">
-        {weekdayNames.map((name) => (
+        {weekdayNames.map((name, index) => (
+          // `min-w-0` lets the grid track shrink below the text's intrinsic
+          // width; without it a long locale name overflows its cell and prints
+          // on top of its neighbours.
           <span
-            key={name}
-            className="text-center text-[10px] font-medium text-white/40 capitalize"
+            key={index}
+            className="min-w-0 truncate text-center text-[10px] font-medium text-white/40 first-letter:uppercase"
           >
             {name}
           </span>
