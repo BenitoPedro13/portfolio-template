@@ -12,7 +12,6 @@ import { DesktopIcon } from './desktop-icon'
 import { Dock } from './dock'
 import { LockScreen } from './lock-screen'
 import { MenuBar } from './menu-bar'
-import { Spotlight } from './spotlight'
 import { useWindows } from './use-windows'
 import { WindowRouter } from './window/window-router'
 
@@ -130,13 +129,6 @@ export function Desktop({
       {showContact ? (
         <ContactDialog contact={contact!} open={contactOpen} onOpenChange={setContactOpen} />
       ) : null}
-
-      {/* Spotlight: ⌘K / Ctrl+K opens a searchable window launcher. */}
-      <Spotlight
-        items={items}
-        onSelect={openBySlug}
-        onContact={() => setContactOpen(true)}
-      />
 
       <LockScreen site={site} locale={locale} hasOpenWindow={openWindow !== null} />
     </div>

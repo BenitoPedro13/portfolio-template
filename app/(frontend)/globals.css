@@ -40,55 +40,37 @@
 }
 
 .dark {
-    /* --- Window surfaces -------------------------------------------------------
-       Windows sit against a near-black void. We use the same neutral-cool hue
-       throughout: --background is the window interior, --card / --popover are
-       slightly lighter "raised" panels inside it.
-       oklch(0.10) ≈ #191919, oklch(0.14) ≈ #232323, oklch(0.17) ≈ #2b2b2b  */
-    --background:         oklch(0.10 0.003 260);  /* window body  */
-    --foreground:         oklch(0.96 0.003 260);  /* primary text */
-    --card:               oklch(0.14 0.003 260);  /* card surface */
-    --card-foreground:    oklch(0.96 0.003 260);
-    --popover:            oklch(0.14 0.003 260);  /* window popup */
-    --popover-foreground: oklch(0.96 0.003 260);
-
-    /* --- Brand accent ----------------------------------------------------------
-       #F97316 in oklch ≈ oklch(0.70 0.195 44).
-       --primary drives buttons, active rings, and link colours. */
-    --primary:            oklch(0.70 0.195 44);   /* orange accent    */
-    --primary-foreground: oklch(0.10 0.003 260);  /* dark text on orange */
-
-    /* --- Muted surfaces --------------------------------------------------------
-       Subtle fills for hover states, input backgrounds, and muted text. */
-    --secondary:            oklch(0.17 0.004 260);
-    --secondary-foreground: oklch(0.96 0.003 260);
-    --muted:                oklch(0.17 0.004 260);
-    --muted-foreground:     oklch(0.56 0.008 260);
-    --accent:               oklch(0.17 0.004 260);
-    --accent-foreground:    oklch(0.96 0.003 260);
-
-    /* --- Semantic --------------------------------------------------------------- */
+    --background: oklch(0.147 0.004 49.3);
+    --foreground: oklch(0.986 0.002 67.8);
+    --card: oklch(0.214 0.009 43.1);
+    --card-foreground: oklch(0.986 0.002 67.8);
+    --popover: oklch(0.214 0.009 43.1);
+    --popover-foreground: oklch(0.986 0.002 67.8);
+    --primary: oklch(0.922 0.005 34.3);
+    --primary-foreground: oklch(0.214 0.009 43.1);
+    --secondary: oklch(0.268 0.011 36.5);
+    --secondary-foreground: oklch(0.986 0.002 67.8);
+    --muted: oklch(0.268 0.011 36.5);
+    --muted-foreground: oklch(0.714 0.014 41.2);
+    --accent: oklch(0.268 0.011 36.5);
+    --accent-foreground: oklch(0.986 0.002 67.8);
     --destructive: oklch(0.704 0.191 22.216);
-    --border:      oklch(1 0 0 / 9%);
-    --input:       oklch(1 0 0 / 12%);
-    --ring:        oklch(0.70 0.195 44 / 60%);  /* orange focus ring */
-
-    /* --- Charts ----------------------------------------------------------------- */
-    --chart-1: oklch(0.70 0.195 44);
-    --chart-2: oklch(0.60 0.155 200);
-    --chart-3: oklch(0.55 0.140 160);
-    --chart-4: oklch(0.50 0.120 280);
-    --chart-5: oklch(0.45 0.100 320);
-
-    /* --- Sidebar ---------------------------------------------------------------- */
-    --sidebar:                 oklch(0.14 0.003 260);
-    --sidebar-foreground:      oklch(0.96 0.003 260);
-    --sidebar-primary:         oklch(0.70 0.195 44);
-    --sidebar-primary-foreground: oklch(0.10 0.003 260);
-    --sidebar-accent:          oklch(0.17 0.004 260);
-    --sidebar-accent-foreground: oklch(0.96 0.003 260);
-    --sidebar-border:          oklch(1 0 0 / 9%);
-    --sidebar-ring:            oklch(0.70 0.195 44 / 60%);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.547 0.021 43.1);
+    --chart-1: oklch(0.879 0.169 91.605);
+    --chart-2: oklch(0.769 0.188 70.08);
+    --chart-3: oklch(0.666 0.179 58.318);
+    --chart-4: oklch(0.555 0.163 48.998);
+    --chart-5: oklch(0.473 0.137 46.201);
+    --sidebar: oklch(0.214 0.009 43.1);
+    --sidebar-foreground: oklch(0.986 0.002 67.8);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.986 0.002 67.8);
+    --sidebar-accent: oklch(0.268 0.011 36.5);
+    --sidebar-accent-foreground: oklch(0.986 0.002 67.8);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.547 0.021 43.1);
 }
 
 @theme inline {
@@ -136,14 +118,11 @@
     /* --- Desktop surface -------------------------------------------------
        The shell is a dark room with a photograph in it; the windows are the
        only lit surfaces. These sit outside the light/dark token set on
-       purpose — the desktop does not follow the theme, the windows do.
-       --color-void: near-black desktop floor (~#0e0e12)
-       --color-signal: the brand orange (#F97316) used for active rings,
-         the close dot, the today-date highlight, and selected cards. */
-    --color-void: oklch(0.09 0.006 260);
-    --color-glass: oklch(0.22 0.006 260 / 0.65);
-    --color-glass-edge: oklch(1 0 0 / 0.10);
-    --color-signal: oklch(0.70 0.195 44);  /* #F97316 orange */
+       purpose — the desktop does not follow the theme, the windows do. */
+    --color-void: oklch(0.13 0.003 260);
+    --color-glass: oklch(0.27 0.004 260 / 0.62);
+    --color-glass-edge: oklch(1 0 0 / 0.12);
+    --color-signal: oklch(0.63 0.204 27);
 }
 
 @theme {

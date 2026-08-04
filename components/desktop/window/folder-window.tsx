@@ -75,12 +75,12 @@ export function FolderWindow({
               className="animate-in fade-in object-cover duration-500"
             />
           ) : null}
-          <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 to-transparent" />
+          <span className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 to-transparent" />
         </AspectRatio>
 
         <span className="absolute inset-x-0 bottom-0 flex items-end justify-between p-5">
           <span className="flex flex-col text-left">
-            <span className="font-data text-[10px] text-signal/80">{dictionary.nowShowing}</span>
+            <span className="font-data text-[10px] text-white/50">{dictionary.nowShowing}</span>
             <span className="font-heading mt-1 text-2xl leading-none font-bold text-white">
               {hero.title}
             </span>

@@ -11,10 +11,8 @@ import { VideoPlayer } from './video-player'
 
 /**
  * A single project: the work first at full width, then the credits line, then
- * the writing, then the stills.
- *
- * Credits are rendered in the orange accent colour so they read as metadata
- * (data class, orange tint) rather than body copy.
+ * the writing, then the stills. Credits sit above the description because on a
+ * film piece the role and format are the first thing a client scans for.
  */
 export function ProjectWindow({ project }: { project: Project }) {
   const cover = mediaUrl(project.cover, 'hero')
@@ -40,24 +38,20 @@ export function ProjectWindow({ project }: { project: Project }) {
         </AspectRatio>
       )}
 
-      <div className="px-7 pt-8 pb-3 sm:px-12 sm:pt-10">
-        <h2 className="font-heading text-[2rem] leading-[1.05] font-bold tracking-tight text-balance text-foreground sm:text-[2.75rem]">
+      <div className="px-6 pt-7 pb-2 sm:px-10">
+        <h2 className="font-heading text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-[2.75rem]">
           {project.title}
         </h2>
 
         {(project.year || credits.length > 0) && (
-          <p className="font-data mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px]">
-            {project.year ? (
-              <span className="text-primary">{project.year}</span>
-            ) : null}
+          <p className="font-data mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-foreground/45">
+            {project.year ? <span>{project.year}</span> : null}
             {credits.map((credit, index) => (
               <Fragment key={credit.id ?? index}>
-                {(project.year || index > 0) && (
-                  <span className="text-foreground/25" aria-hidden="true">·</span>
-                )}
+                {(project.year || index > 0) && <span aria-hidden="true">·</span>}
                 <span>
-                  <span className="text-foreground/35">{credit.label}</span>{' '}
-                  <span className="text-foreground/65">{credit.value}</span>
+                  <span className="text-foreground/30">{credit.label}</span>{' '}
+                  <span className="text-foreground/60">{credit.value}</span>
                 </span>
               </Fragment>
             ))}
@@ -66,12 +60,12 @@ export function ProjectWindow({ project }: { project: Project }) {
 
         <RichText
           value={project.description}
-          className="mt-7 max-w-[68ch] text-[15px] leading-[1.8] text-foreground/75 [&_p:not(:last-child)]:mb-4 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-3"
+          className="mt-6 max-w-[68ch] text-[15px] leading-[1.7] text-foreground/75"
         />
       </div>
 
       {gallery.length > 0 ? (
-        <div className="grid grid-cols-1 gap-2 px-7 pt-5 pb-10 sm:grid-cols-2 sm:px-12">
+        <div className="grid grid-cols-1 gap-2.5 px-6 pt-4 pb-8 sm:grid-cols-2 sm:px-10">
           {gallery.map((entry, index) => {
             const url = mediaUrl(entry.image, 'card')
             if (!url) return null
@@ -87,7 +81,7 @@ export function ProjectWindow({ project }: { project: Project }) {
                   alt={mediaAlt(entry.image, project.title)}
                   fill
                   sizes="(max-width: 640px) 100vw, 545px"
-                  className="object-cover transition-transform duration-700 ease-window hover:scale-[1.03]"
+                  className="object-cover"
                 />
               </AspectRatio>
             )

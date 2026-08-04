@@ -10,10 +10,6 @@ import { cn } from '@/lib/utils'
 /**
  * One frame in the reel. The index is not decoration — a portfolio is an
  * ordered body of work, and `order` is the thing being shown.
- *
- * The active state uses the brand orange ring (`--color-signal`) to tie the
- * scrubber selection back to the same signal colour used for focus rings,
- * the close button, and today's date on the calendar.
  */
 export function ProjectCard({
   project,
@@ -39,8 +35,8 @@ export function ProjectCard({
         'transition-[opacity,box-shadow] duration-300 ease-window',
         'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
         active
-          ? 'ring-2 ring-signal shadow-[0_0_20px_rgba(249,115,22,0.15)]'
-          : 'opacity-70 hover:opacity-100',
+          ? 'ring-2 ring-signal'
+          : 'opacity-80 hover:opacity-100',
         className
       )}
     >
@@ -54,8 +50,7 @@ export function ProjectCard({
             className="object-cover transition-transform duration-700 ease-window group-hover:scale-[1.04]"
           />
         ) : null}
-        {/* Stronger gradient so text is always legible on any cover. */}
-        <span className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <span className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
       </AspectRatio>
 
       <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
@@ -64,13 +59,13 @@ export function ProjectCard({
             {project.title}
           </span>
           {project.year ? (
-            <span className="font-data mt-1 text-[10px] text-white/55">{project.year}</span>
+            <span className="font-data mt-1 text-[10px] text-white/60">{project.year}</span>
           ) : null}
         </span>
         <span
           className={cn(
             'font-data shrink-0 text-[10px] transition-colors',
-            active ? 'text-signal' : 'text-white/35 group-hover:text-white/60'
+            active ? 'text-signal' : 'text-white/40'
           )}
         >
           {String(index + 1).padStart(2, '0')}
