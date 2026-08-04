@@ -17,6 +17,7 @@ import { type Dictionary, intlLocale } from '@/lib/i18n'
 import { resolveItem } from '@/lib/media'
 import { cn } from '@/lib/utils'
 import { LanguageSwitcher } from './language-switcher'
+import { SpotlightHint } from './spotlight'
 import { useNow } from './use-now'
 
 type NavLink = NonNullable<Site['nav']>[number]
@@ -104,6 +105,7 @@ export function MenuBar({
 
           <div className="hidden items-center gap-3 md:flex">
             {showLanguage ? <LanguageSwitcher locale={locale} dictionary={dictionary} /> : null}
+            <SpotlightHint />
             {showClock ? <Clock locale={locale} /> : null}
           </div>
 

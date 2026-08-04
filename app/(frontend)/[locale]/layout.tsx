@@ -92,8 +92,10 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       suppressHydrationWarning
+      // `dark` forces the shadcn dark token set globally — the windows are lit
+      // surfaces inside a dark room, so there is no light mode on this site.
       className={cn(
-        'antialiased',
+        'dark antialiased',
         'font-sans',
         // The dark surface must sit on <html>, not just <body>: the browser
         // paints html's background in the canvas margins, and a body-only
