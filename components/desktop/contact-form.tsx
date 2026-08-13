@@ -35,9 +35,14 @@ export function ContactForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setStatus('submitting')
 
-    const data = new FormData(event.currentTarget)
+    // The browser nulls out `currentTarget` once the event finishes
+    // dispatching, so it must be captured now — using it after the `await`
+    // below throws on a successful submit and masks it as a failure.
+    const formEl = event.currentTarget
+    const data = new FormData(formEl)
+
+    setStatus('submitting')
 
     try {
       const response = await fetch('/api/contact', {
@@ -55,7 +60,7 @@ export function ContactForm({
       if (!response.ok) throw new Error('request_failed')
 
       setStatus('success')
-      event.currentTarget.reset()
+      formEl.reset()
     } catch {
       setStatus('error')
     }
