@@ -368,6 +368,79 @@ export const Site: GlobalConfig = {
               ],
             },
             {
+              name: 'form',
+              type: 'group',
+              label: 'Contact form',
+              admin: {
+                description:
+                  'A composed message sent to your inbox by email, instead of a visitor having to open their own mail app.',
+              },
+              fields: [
+                {
+                  name: 'enabled',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    description:
+                      'Also requires SMTP_HOST, SMTP_PORT, SMTP_USER and SMTP_PASS to be set — see .env.example.',
+                  },
+                },
+                {
+                  name: 'recipient',
+                  type: 'email',
+                  admin: {
+                    description: 'Where submissions are sent.',
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                  },
+                },
+                {
+                  name: 'heading',
+                  type: 'text',
+                  localized: true,
+                  defaultValue: 'Send a message',
+                  admin: {
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                  },
+                },
+                {
+                  name: 'intro',
+                  type: 'textarea',
+                  localized: true,
+                  admin: {
+                    description: 'Optional short line above the form.',
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                  },
+                },
+                {
+                  name: 'reasons',
+                  type: 'array',
+                  label: 'Subject options',
+                  admin: {
+                    description:
+                      'The dropdown a visitor picks from, e.g. Partnership, Project, Contract, Other. Leave empty to hide the dropdown and just collect a message.',
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                  },
+                  fields: [
+                    {
+                      name: 'label',
+                      type: 'text',
+                      required: true,
+                      localized: true,
+                    },
+                  ],
+                },
+                {
+                  name: 'successMessage',
+                  type: 'text',
+                  localized: true,
+                  defaultValue: 'Thanks — message sent. I’ll get back to you soon.',
+                  admin: {
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                  },
+                },
+              ],
+            },
+            {
               name: 'socials',
               type: 'array',
               label: 'Social links',

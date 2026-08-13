@@ -67,7 +67,7 @@ export function WindowRouter({
         onBack={closeProject}
         onClose={closeAll}
       >
-        <ProjectWindow project={project} />
+        <ProjectWindow project={project} dictionary={dictionary} />
       </WindowFrame>
     )
   }

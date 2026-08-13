@@ -50,6 +50,20 @@ export const Projects: CollectionConfig = {
       },
     },
     {
+      name: 'videoPlayback',
+      type: 'select',
+      defaultValue: 'normal',
+      admin: {
+        description:
+          'Boomerang plays forward, then reverses back to the start and repeats — only works for a direct video file (.mp4, .webm, .mov), not a YouTube/Vimeo/Wistia link.',
+        condition: (data) => Boolean(data?.videoUrl),
+      },
+      options: [
+        { label: 'Normal', value: 'normal' },
+        { label: 'Boomerang (reverse loop)', value: 'boomerang' },
+      ],
+    },
+    {
       name: 'meta',
       type: 'array',
       label: 'Credits',

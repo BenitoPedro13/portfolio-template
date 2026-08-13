@@ -35,7 +35,9 @@ export function Desktop({
   const free = items.filter((item) => item.placement === 'free')
 
   const contact = site.contact
-  const showContact = contact?.enabled !== false && (contact?.rows?.length ?? 0) > 0
+  const formEnabled = site.form?.enabled === true
+  const showContact =
+    contact?.enabled !== false && ((contact?.rows?.length ?? 0) > 0 || formEnabled)
 
   function openItem(item: DesktopItem) {
     // Link items leave the site instead of opening a window.
@@ -115,7 +117,7 @@ export function Desktop({
       ) : null}
 
       {showContact ? (
-        <ContactButton label={contact!.title ?? ''} onClick={() => setContactOpen(true)} />
+        <ContactButton label={contact?.title ?? ''} onClick={() => setContactOpen(true)} />
       ) : null}
 
       <Dock
@@ -127,7 +129,13 @@ export function Desktop({
       <WindowRouter items={items} site={site} dictionary={dictionary} />
 
       {showContact ? (
-        <ContactDialog contact={contact!} open={contactOpen} onOpenChange={setContactOpen} />
+        <ContactDialog
+          contact={contact ?? {}}
+          form={site.form}
+          dictionary={dictionary}
+          open={contactOpen}
+          onOpenChange={setContactOpen}
+        />
       ) : null}
 
       <LockScreen site={site} locale={locale} hasOpenWindow={openWindow !== null} />

@@ -1,39 +1,87 @@
 'use client'
 
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import Image from 'next/image'
 
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import type { Project } from '@/payload-types'
-import { mediaAlt, mediaUrl, resolveMedia } from '@/lib/media'
+import type { Dictionary } from '@/lib/i18n'
+import { mediaAlt, mediaDimensions, mediaUrl, resolveMedia } from '@/lib/media'
 import { RichText } from '@/lib/rich-text'
+import { Lightbox, type LightboxImage } from './lightbox'
 import { VideoPlayer } from './video-player'
 
 /**
  * A single project: the work first at full width, then the credits line, then
  * the writing, then the stills. Credits sit above the description because on a
  * film piece the role and format are the first thing a client scans for.
+ *
+ * Cover and gallery photos render cropped to fill their tiles, so clicking any
+ * of them opens the full, uncropped frame in a lightbox rather than leaving
+ * the crop as the only view.
  */
-export function ProjectWindow({ project }: { project: Project }) {
+export function ProjectWindow({
+  project,
+  dictionary,
+}: {
+  project: Project
+  dictionary: Dictionary
+}) {
   const cover = mediaUrl(project.cover, 'hero')
   const gallery = (project.gallery ?? []).filter((entry) => resolveMedia(entry.image))
   const credits = project.meta ?? []
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
-  const player = <VideoPlayer url={project.videoUrl} poster={cover} title={project.title} />
+  const lightboxImages: LightboxImage[] = [
+    ...(cover
+      ? [
+          {
+            src: mediaUrl(project.cover) ?? cover,
+            alt: mediaAlt(project.cover, project.title),
+            ...mediaDimensions(project.cover),
+          },
+        ]
+      : []),
+    ...gallery.map((entry) => ({
+      src: mediaUrl(entry.image) ?? '',
+      alt: mediaAlt(entry.image, project.title),
+      ...mediaDimensions(entry.image),
+    })),
+  ].filter((image) => image.src)
+
+  // The cover only takes lightbox slot 0 when there is no video in front of
+  // it — with a video playing, the cover is never shown, so it is not in the
+  // gallery grid either and gallery images start at index 0.
+  const hasVideo = Boolean(project.videoUrl)
+  const galleryIndexOffset = !hasVideo && cover ? 1 : 0
 
   return (
     <div className="flex flex-col">
-      {player ?? (
+      {hasVideo ? (
+        <VideoPlayer
+          url={project.videoUrl}
+          poster={cover}
+          title={project.title}
+          playback={project.videoPlayback}
+        />
+      ) : (
         <AspectRatio ratio={16 / 9} className="bg-foreground/8">
           {cover ? (
-            <Image
-              src={cover}
-              alt={mediaAlt(project.cover, project.title)}
-              fill
-              sizes="(max-width: 1200px) 100vw, 1140px"
-              priority
-              className="object-cover"
-            />
+            <button
+              type="button"
+              onClick={() => setLightboxIndex(0)}
+              aria-label={project.title}
+              className="group block size-full cursor-zoom-in"
+            >
+              <Image
+                src={cover}
+                alt={mediaAlt(project.cover, project.title)}
+                fill
+                sizes="(max-width: 1200px) 100vw, 1140px"
+                priority
+                className="object-cover transition-opacity group-hover:opacity-90"
+              />
+            </button>
           ) : null}
         </AspectRatio>
       )}
@@ -76,18 +124,33 @@ export function ProjectWindow({ project }: { project: Project }) {
                 ratio={16 / 10}
                 className="overflow-hidden rounded-lg bg-foreground/8"
               >
-                <Image
-                  src={url}
-                  alt={mediaAlt(entry.image, project.title)}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 545px"
-                  className="object-cover"
-                />
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(index + galleryIndexOffset)}
+                  aria-label={project.title}
+                  className="group block size-full cursor-zoom-in"
+                >
+                  <Image
+                    src={url}
+                    alt={mediaAlt(entry.image, project.title)}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 545px"
+                    className="object-cover transition-opacity group-hover:opacity-90"
+                  />
+                </button>
               </AspectRatio>
             )
           })}
         </div>
       ) : null}
+
+      <Lightbox
+        images={lightboxImages}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        dictionary={dictionary}
+      />
     </div>
   )
 }

@@ -221,6 +221,10 @@ export interface Project {
    */
   videoUrl?: string | null;
   /**
+   * Boomerang plays forward, then reverses back to the start and repeats — only works for a direct video file (.mp4, .webm, .mov), not a YouTube/Vimeo/Wistia link.
+   */
+  videoPlayback?: ('normal' | 'boomerang') | null;
+  /**
    * Shown as a single line under the title, e.g. Role · Direction, Client · Nike, Format · 4K.
    */
   meta?:
@@ -489,6 +493,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   year?: T;
   cover?: T;
   videoUrl?: T;
+  videoPlayback?: T;
   meta?:
     | T
     | {
@@ -672,6 +677,34 @@ export interface Site {
       | null;
   };
   /**
+   * A composed message sent to your inbox by email, instead of a visitor having to open their own mail app.
+   */
+  form?: {
+    /**
+     * Also requires SMTP_HOST, SMTP_PORT, SMTP_USER and SMTP_PASS to be set — see .env.example.
+     */
+    enabled?: boolean | null;
+    /**
+     * Where submissions are sent.
+     */
+    recipient?: string | null;
+    heading?: string | null;
+    /**
+     * Optional short line above the form.
+     */
+    intro?: string | null;
+    /**
+     * The dropdown a visitor picks from, e.g. Partnership, Project, Contract, Other. Leave empty to hide the dropdown and just collect a message.
+     */
+    reasons?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    successMessage?: string | null;
+  };
+  /**
    * Shown at the bottom of text windows.
    */
   socials?:
@@ -759,6 +792,21 @@ export interface SiteSelect<T extends boolean = true> {
               tint?: T;
               id?: T;
             };
+      };
+  form?:
+    | T
+    | {
+        enabled?: T;
+        recipient?: T;
+        heading?: T;
+        intro?: T;
+        reasons?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        successMessage?: T;
       };
   socials?:
     | T

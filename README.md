@@ -315,6 +315,13 @@ Links follow the usual schemes: `https://wa.me/351900000000`,
 **Socials** is a separate list, shown as an icon row at the bottom of text
 windows. Keep it to profiles you actually maintain.
 
+**Contact form** sends a composed message (name, email, an optional subject
+picked from your own list of options, and a message) to your inbox by email —
+for visitors who would not otherwise open a mail app. Turn it on, set a
+recipient, and set `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` (see
+[Environment variables](#environment-variables)). It appears in the contact
+panel below the rows above, or on its own if you leave the rows empty.
+
 ### SEO
 
 Browser tab title, description, and the share image used when your link is
@@ -339,6 +346,7 @@ switch from the menu bar without losing the window they have open.
 - [ ] Every desktop item points somewhere real
 - [ ] Nav links and dock items point at your items, not the seeded ones
 - [ ] Contact links tested — the phone number and email are yours
+- [ ] Contact form tested end-to-end, if enabled — a submission actually arrives
 - [ ] Every project has a cover; videos play
 - [ ] Both languages filled in, if using two
 - [ ] Blob storage connected in Vercel, and an admin upload survives a redeploy
@@ -355,6 +363,8 @@ switch from the menu bar without losing the window they have open.
 | `PORTFOLIO_LOCALES` | No | Comma-separated codes. Defaults to `pt,en` |
 | `PORTFOLIO_DEFAULT_LOCALE` | No | Must be in the list. Defaults to the first |
 | `BLOB_READ_WRITE_TOKEN` | Production | Injected by Vercel when a Blob store is connected. Absent locally means uploads go to `./media` |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Only for the contact form | Any SMTP mailbox. For Gmail, use an App Password, not your login password |
+| `SMTP_FROM` | No | `"Your Name <you@example.com>"`. Defaults to `SMTP_USER` |
 
 Run `pnpm generate:types` after changing the locale list.
 

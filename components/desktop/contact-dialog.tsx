@@ -9,10 +9,12 @@ import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer'
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item'
 import { Separator } from '@/components/ui/separator'
 import { useIsMobile } from '@/hooks/use-mobile'
+import type { Dictionary } from '@/lib/i18n'
 import type { Site } from '@/payload-types'
 import { mediaUrl } from '@/lib/media'
 import { cn } from '@/lib/utils'
 import { PlatformIcon } from './brand-icons'
+import { ContactForm } from './contact-form'
 
 type ContactRow = NonNullable<NonNullable<Site['contact']>['rows']>[number]
 
@@ -70,22 +72,39 @@ function Row({ row }: { row: ContactRow }) {
 
 export function ContactDialog({
   contact,
+  form,
+  dictionary,
   open,
   onOpenChange,
 }: {
   contact: NonNullable<Site['contact']>
+  form?: Site['form']
+  dictionary: Dictionary
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
   const isMobile = useIsMobile()
   const rows = contact.rows ?? []
   const title = contact.title ?? ''
+  const showForm = form?.enabled === true
 
   const body = (
     <div className="flex flex-col gap-3 px-5 pt-2 pb-6">
       {rows.map((row) => (
         <Row key={row.id ?? row.href} row={row} />
       ))}
+
+      {rows.length > 0 && showForm ? <Separator className="my-2" /> : null}
+
+      {showForm && form ? (
+        <div className="flex flex-col gap-3 px-1 py-2">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">{form.heading}</h3>
+            {form.intro ? <p className="mt-1 text-sm text-foreground/60">{form.intro}</p> : null}
+          </div>
+          <ContactForm form={form} dictionary={dictionary} />
+        </div>
+      ) : null}
     </div>
   )
 

@@ -55,6 +55,15 @@ export type Dictionary = {
   itemCountOne: string
   itemCountMany: string
   nowShowing: string
+  /** Contact form field chrome; the heading/intro/options themselves are CMS copy. */
+  formName: string
+  formEmail: string
+  formSubject: string
+  formSubjectPlaceholder: string
+  formMessage: string
+  formSend: string
+  formSending: string
+  formError: string
 }
 
 const STRINGS: Record<string, Dictionary> = {
@@ -78,6 +87,14 @@ const STRINGS: Record<string, Dictionary> = {
     itemCountOne: '{n} item',
     itemCountMany: '{n} items',
     nowShowing: 'Now showing',
+    formName: 'Name',
+    formEmail: 'Email',
+    formSubject: 'Subject',
+    formSubjectPlaceholder: 'Choose one',
+    formMessage: 'Message',
+    formSend: 'Send message',
+    formSending: 'Sending…',
+    formError: 'Something went wrong. Please try again, or email directly.',
   },
   pt: {
     back: 'Voltar',
@@ -99,6 +116,14 @@ const STRINGS: Record<string, Dictionary> = {
     itemCountOne: '{n} item',
     itemCountMany: '{n} itens',
     nowShowing: 'A mostrar',
+    formName: 'Nome',
+    formEmail: 'Email',
+    formSubject: 'Assunto',
+    formSubjectPlaceholder: 'Escolha uma opção',
+    formMessage: 'Mensagem',
+    formSend: 'Enviar mensagem',
+    formSending: 'A enviar…',
+    formError: 'Algo correu mal. Tente novamente ou envie um email diretamente.',
   },
   es: {
     back: 'Volver',
@@ -120,6 +145,14 @@ const STRINGS: Record<string, Dictionary> = {
     itemCountOne: '{n} elemento',
     itemCountMany: '{n} elementos',
     nowShowing: 'Mostrando',
+    formName: 'Nombre',
+    formEmail: 'Email',
+    formSubject: 'Asunto',
+    formSubjectPlaceholder: 'Elige una opción',
+    formMessage: 'Mensaje',
+    formSend: 'Enviar mensaje',
+    formSending: 'Enviando…',
+    formError: 'Algo salió mal. Inténtalo de nuevo o escribe un email directamente.',
   },
   fr: {
     back: 'Retour',
@@ -141,6 +174,14 @@ const STRINGS: Record<string, Dictionary> = {
     itemCountOne: '{n} élément',
     itemCountMany: '{n} éléments',
     nowShowing: 'À l’affiche',
+    formName: 'Nom',
+    formEmail: 'Email',
+    formSubject: 'Sujet',
+    formSubjectPlaceholder: 'Choisissez une option',
+    formMessage: 'Message',
+    formSend: 'Envoyer le message',
+    formSending: 'Envoi…',
+    formError: 'Une erreur est survenue. Réessayez, ou écrivez un email directement.',
   },
 }
 
