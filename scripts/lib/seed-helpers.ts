@@ -8,7 +8,7 @@ import { defaultLocale, locales, toPayloadLocale } from '../../lib/locales'
 type PayloadLocale = Config['locale']
 
 /** Locales are configured at runtime; see `toPayloadLocale`. */
-const asLocale = (locale: string) => toPayloadLocale<PayloadLocale>(locale)
+export const asLocale = (locale: string) => toPayloadLocale<PayloadLocale>(locale)
 
 /** Values keyed by locale code, e.g. `{ pt: 'Trabalhos', en: 'Work' }`. */
 export type Localized<T> = Record<string, T>

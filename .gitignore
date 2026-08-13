@@ -15,6 +15,8 @@
 /.next/
 /out/
 
+/docs
+
 # production
 /build
 
@@ -34,6 +36,9 @@ pnpm-debug.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+
+# local admin token for one-off import scripts
+.payload-token
 
 # typescript
 *.tsbuildinfo
