@@ -1,5 +1,6 @@
 'use client'
 
+import { useBoomerangVideo } from '@/hooks/use-boomerang-video'
 import { cn } from '@/lib/utils'
 
 /**
@@ -11,20 +12,27 @@ export function Background({
   posterUrl,
   className,
   blurred = false,
+  playback,
 }: {
   videoUrl?: string | null
   posterUrl?: string | null
   className?: string
   blurred?: boolean
+  /** 'boomerang' reverses back to the start instead of cutting to it. */
+  playback?: 'normal' | 'boomerang' | null
 }) {
+  const isBoomerang = playback === 'boomerang'
+  const videoRef = useBoomerangVideo(isBoomerang)
+
   return (
     <div className={cn('absolute inset-0 overflow-hidden bg-neutral-950', className)}>
       {videoUrl ? (
         <video
+          ref={videoRef}
           src={videoUrl}
           poster={posterUrl ?? undefined}
           autoPlay
-          loop
+          loop={!isBoomerang}
           muted
           playsInline
           preload="auto"

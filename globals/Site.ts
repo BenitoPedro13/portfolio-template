@@ -53,6 +53,20 @@ export const Site: GlobalConfig = {
               },
             },
             {
+              name: 'backgroundVideoPlayback',
+              type: 'select',
+              defaultValue: 'normal',
+              admin: {
+                description:
+                  'Boomerang plays forward, then reverses back to the start and repeats, instead of cutting straight back to frame one.',
+                condition: (data) => Boolean(data?.backgroundVideoUrl),
+              },
+              options: [
+                { label: 'Normal', value: 'normal' },
+                { label: 'Boomerang (reverse loop)', value: 'boomerang' },
+              ],
+            },
+            {
               name: 'backgroundPoster',
               type: 'upload',
               relationTo: 'media',

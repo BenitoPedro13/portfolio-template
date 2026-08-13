@@ -70,6 +70,7 @@ export function Desktop({
       <Background
         videoUrl={site.backgroundVideoUrl}
         posterUrl={mediaUrl(site.backgroundPoster, 'hero')}
+        playback={site.backgroundVideoPlayback}
       />
 
       <MenuBar

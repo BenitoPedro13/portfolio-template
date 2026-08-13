@@ -225,6 +225,7 @@ One entry per piece of work.
 | **Year** | Free text, shown under the title |
 | **Cover** | Required. The thumbnail in folder windows, and the video's poster frame |
 | **Video URL** | Wistia, YouTube, Vimeo, or a direct `.mp4`. Paste the normal share link — it is converted to an embed. Blank shows the cover instead |
+| **Playback** | Only for a direct video file. Normal plays once through with controls; Boomerang reverses back to the start on end, then repeats |
 | **Credits** | Label/value pairs shown as one line under the title: `Role · Direction`, `Format · 4K`. The label names the field, the value answers it |
 | **Description** | Rich text: headings, bold, italic, lists, quotes, links |
 | **Gallery** | Additional stills, shown in a two-column grid below the description |
@@ -266,6 +267,7 @@ The global settings, in tabs.
 | **Tagline** | Optional line under your name on the lock screen. Translated |
 | **Avatar** | The round portrait on the lock screen |
 | **Background video URL** | Looping wallpaper. A path like `/videos/bg.mp4` from `public/`, or a full URL |
+| **Background playback** | Normal cuts back to frame one; Boomerang reverses back to the start instead |
 | **Background poster** | Still wallpaper. Used while the video loads, or on its own if you leave the video blank |
 
 ### Menu bar

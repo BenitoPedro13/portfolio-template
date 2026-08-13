@@ -598,6 +598,10 @@ export interface Site {
    */
   backgroundVideoUrl?: string | null;
   /**
+   * Boomerang plays forward, then reverses back to the start and repeats, instead of cutting straight back to frame one.
+   */
+  backgroundVideoPlayback?: ('normal' | 'boomerang') | null;
+  /**
    * Still image shown while the video loads, or instead of it.
    */
   backgroundPoster?: (number | null) | Media;
@@ -734,6 +738,7 @@ export interface SiteSelect<T extends boolean = true> {
   tagline?: T;
   avatar?: T;
   backgroundVideoUrl?: T;
+  backgroundVideoPlayback?: T;
   backgroundPoster?: T;
   menuBar?:
     | T

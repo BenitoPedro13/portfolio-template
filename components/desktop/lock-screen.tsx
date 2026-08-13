@@ -94,6 +94,7 @@ export function LockScreen({
       <Background
         videoUrl={site.backgroundVideoUrl}
         posterUrl={mediaUrl(site.backgroundPoster, 'hero')}
+        playback={site.backgroundVideoPlayback}
         blurred
       />
 
