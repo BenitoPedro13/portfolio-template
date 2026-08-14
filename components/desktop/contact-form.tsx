@@ -53,7 +53,7 @@ export function ContactForm({
           email: data.get('email'),
           reason: data.get('reason'),
           message: data.get('message'),
-          company: data.get('company'),
+          company: data.get('hp-topic'),
         }),
       })
 
@@ -80,10 +80,13 @@ export function ContactForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Honeypot: visually hidden from real visitors, invisible to screen
-          readers, but a form-filling bot will still find and fill it in. */}
+          readers, but a form-filling bot will still find and fill it in.
+          Named away from "company"/"organization" etc. — browsers' address
+          autofill recognizes those names and silently fills this field for
+          real visitors too, which used to trip the honeypot on every send. */}
       <input
         type="text"
-        name="company"
+        name="hp-topic"
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
